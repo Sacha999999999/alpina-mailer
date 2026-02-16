@@ -1,0 +1,21 @@
+fetch("/api/send", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: email,
+    subject: "Votre estimation fiscale Alpina-Conseil",
+    message: message
+  })
+})
+.then(res => res.json())
+.then(data => {
+    if(data.success){
+        alert("Email envoyé !");
+        window.location.href = "https://calendar.google.com/..."; // redirection
+    } else {
+        alert("Erreur lors de l'envoi : " + data.error);
+    }
+})
+.catch(err => {
+    alert("Erreur réseau, merci de réessayer.");
+});
