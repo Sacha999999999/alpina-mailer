@@ -14,11 +14,11 @@ export default async function handler(req, res) {
   try {
     // Config SMTP gratuit (exemple avec Mailtrap)
     let transporter = nodemailer.createTransport({
-      host: "smtp.mailtrap.io",
+      host: "sandbox.smtp.mailtrap.io",
       port: 587,
       auth: {
-        user: "TON_USER_MAILTRAP",     // Remplace par ton user Mailtrap
-        pass: "TON_PASS_MAILTRAP"      // Remplace par ton mot de passe Mailtrap
+        user: "fa0b9bf86cdbc1",     // Remplace par ton user Mailtrap
+        pass: "8cb34aaa2da2e6"      // Remplace par ton mot de passe Mailtrap
       }
     });
 
