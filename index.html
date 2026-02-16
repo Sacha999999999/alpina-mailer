@@ -5,15 +5,14 @@
 <title>Alpina-Conseil Calculateur</title>
 <style>
 #alpina-calculateur{
-  font-family:'Segoe UI',sans-serif;
-  background:#f4f6f9;
-  padding:40px;
-  max-width:700px;
-  margin:auto;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+font-family:'Segoe UI',sans-serif;
+background:#f4f6f9;
+padding:40px;
+max-width:700px;
+margin:auto;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
-
 h2{text-align:center;color:#0d2b4d;}
 .page{display:none;text-align:center;}
 .active{display:block;}
@@ -50,73 +49,177 @@ input[type="number"], input[type="email"], select{padding:8px;margin-top:10px;wi
 
 <!-- PAGE 1 -->
 <div class="page active" id="page1">
-  <button onclick="start()">✨ Commencez ici</button>
+<button onclick="start()">✨ Commencez ici</button>
 </div>
 
 <!-- TYPE -->
 <div class="page" id="pageType">
-  <h3>Vous êtes :</h3>
-  <button onclick="selectType('Particulier')">Particulier</button>
-  <button onclick="selectType('Indépendant')">Indépendant</button>
-  <button onclick="selectType('Société')">Société</button>
-  <button class="back-btn" onclick="show('page1',0)">⬅ Retour</button>
+<h3>Vous êtes :</h3>
+<button onclick="selectType('Particulier')">Particulier</button>
+<button onclick="selectType('Indépendant')">Indépendant</button>
+<button onclick="selectType('Société')">Société</button>
+<button class="back-btn" onclick="show('page1',0)">⬅ Retour</button>
+</div>
+
+<!-- CHIFFRE AFFAIRES -->
+<div class="page" id="pageCA">
+<h3>Quel est votre chiffre d'affaires ?</h3>
+<div id="caOptions"></div>
+<button class="back-btn" onclick="backCA()">⬅ Retour</button>
+</div>
+
+<!-- STATUT -->
+<div class="page" id="pageStatut">
+<h3>Quel est votre statut ?</h3>
+<div id="statutOptions"></div>
+<button class="back-btn" onclick="backStatut()">⬅ Retour</button>
 </div>
 
 <!-- ENFANTS -->
 <div class="page" id="pageEnfants">
-  <h3>Nombre d'enfants (-18 ans)</h3>
-  <select id="nbEnfants">
-    <option value="0">0</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6+</option>
-  </select>
-  <button onclick="addEnfants()">Suivant</button>
-  <button class="back-btn" onclick="backEnfants()">⬅ Retour</button>
+<h3>Nombre d'enfants (-18 ans)</h3>
+<select id="nbEnfants">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6+</option>
+</select>
+<button onclick="addEnfants()">Suivant</button>
+<button class="back-btn" onclick="backEnfants()">⬅ Retour</button>
+</div>
+
+<!-- PROPRIETAIRE -->
+<div class="page" id="pageProprio">
+<h3>Situation immobilière :</h3>
+<button onclick="setProprio(0,'Non propriétaire')">Non propriétaire</button>
+<button onclick="setProprio(100,'Propriétaire (Suisse)')">Propriétaire</button>
+<button onclick="setProprio(150,'Propriétaire + bien à l’étranger')">Propriétaire + étranger</button>
+<button class="back-btn" onclick="backProprio()">⬅ Retour</button>
+</div>
+
+<!-- COMPTES -->
+<div class="page" id="pageComptes">
+<h3>Combien de comptes bancaires ?</h3>
+<button onclick="setComptes(0,'0 à 5 comptes')">0 à 5</button>
+<button onclick="setComptes(50,'5 à 10 comptes')">5 à 10</button>
+<button onclick="setComptes(100,'Plus de 10 comptes')">Plus de 10</button>
+<button class="back-btn" onclick="backComptes()">⬅ Retour</button>
+</div>
+
+<!-- SPECIFICITES -->
+<div class="page" id="pageSpec">
+<h3>Autres spécificités :</h3>
+<div class="checkbox-group">
+<label><input type="checkbox" value="Donation"> Donation</label>
+<label><input type="checkbox" value="Héritage"> Héritage</label>
+<label><input type="checkbox" value="Plus-value immobilière"> Plus-value immobilière</label>
+<label><input type="checkbox" value="Propriétaire de société"> Propriétaire de société</label>
+<label><input type="checkbox" value="Autre"> Autre</label>
+</div>
+<button onclick="addSpec()">Suivant</button>
+<button class="back-btn" onclick="backSpec()">⬅ Retour</button>
+</div>
+
+<!-- LOADING -->
+<div class="page" id="pageLoading">
+<div class="loading">Calcul en cours...</div>
 </div>
 
 <!-- RESULT -->
 <div class="page" id="resultPage">
-  <div class="result">
-    Montant estimatif : CHF <span id="total">0</span>.-
-  </div>
-  <div class="summary" id="summary"></div>
-  <div style="text-align:center;margin-top:20px;">
-    <button onclick="show('pageEmail',100)">Prendre rendez-vous</button>
-  </div>
+<div class="result">
+Montant estimatif : CHF <span id="total">0</span>.-
+</div>
+<div class="summary" id="summary"></div>
+<p style="text-align:center;margin-top:20px;color:#0d2b4d;">
+Ce montant est une estimation indicative.<br>
+Un rendez-vous conseil est nécessaire pour validation définitive.
+</p>
+<div style="text-align:center;">
+<button onclick="show('pageEmail',100)">Prendre rendez-vous</button>
+</div>
 </div>
 
 <!-- EMAIL -->
 <div class="page" id="pageEmail">
-  <h3>Pour recevoir votre estimation par mail :</h3>
-  <input type="email" id="clientEmail" placeholder="Votre email" required>
-  <button onclick="sendEmail()">Recevoir mon estimation</button>
-  <button class="back-btn" onclick="show('resultPage',100)">⬅ Retour</button>
+<h3>Pour recevoir votre estimation par mail :</h3>
+<input type="email" id="clientEmail" placeholder="Votre email" required>
+<button onclick="sendEmail()">Recevoir mon estimation</button>
+<button class="back-btn" onclick="show('resultPage',100)">⬅ Retour</button>
 </div>
 
 <script>
-var total=0, summary=[], userType="";
+var total=0, summary=[], userType="", lastCAAmount=0;
 
+// NAVIGATION
 function show(id,p){
-  document.querySelectorAll("#alpina-calculateur .page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.getElementById("progressBar").style.width=p+"%";
+document.querySelectorAll("#alpina-calculateur .page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.getElementById("progressBar").style.width=p+"%";
 }
 
 function start(){total=0;summary=[];show('pageType',10);}
-function addEnfants(){var nb=parseInt(document.getElementById("nbEnfants").value)||0;if(nb>0){total+=nb*50;summary.push("Enfants : "+nb);}else{summary.push("Enfants : Aucun");}show('resultPage',100);}
+function selectType(type){
+userType=type;summary.push("Type : "+type);
+if(type==="Particulier"){show("pageStatut",20);loadStatutParticulier();}
+if(type==="Indépendant"){show("pageCA",20);loadCAIndep();}
+if(type==="Société"){show("pageCA",20);loadCASociete();}
+}
 
-// EMAIL FETCH vers Vercel
+function loadCAIndep(){
+document.getElementById("caOptions").innerHTML=`
+<button onclick="addCA(800,'CA < 100000')">Moins de 100'000</button>
+<button onclick="addCA(1200,'CA 100000 - 500000')">100'000 à 500'000</button>
+<button onclick="addCA(1500,'CA > 500'000')">Plus de 500'000</button>`;
+}
+
+function loadCASociete(){
+document.getElementById("caOptions").innerHTML=`
+<button onclick="addCASoc(1500,'CA < 500000')">Moins de 500'000</button>
+<button onclick="addCASoc(2250,'CA 500000 - 5M')">500'000 à 5M</button>
+<button onclick="addCASoc(3000,'CA > 5M')">Plus de 5M</button>`;
+}
+
+function addCA(amount,label){total+=amount;lastCAAmount=amount;summary.push(label);loadStatutIndep();show('pageStatut',35);}
+function addCASoc(amount,label){total+=amount;summary.push(label);show('pageLoading',95);setTimeout(()=>{document.getElementById("total").innerText=total;document.getElementById("summary").innerHTML=summary.join("<br>");show('resultPage',100);},1500);}
+
+function loadStatutParticulier(){document.getElementById("statutOptions").innerHTML=`
+<button onclick="addStatut(300,'Célibataire')">Célibataire</button>
+<button onclick="addStatut(450,'Couple')">Couple</button>
+<button onclick="addStatut(150,'Junior (-25 ans)')">Junior (-25 ans)</button>
+<button onclick="addStatut(250,'Couple junior (-25 ans)')">Couple junior (-25 ans)</button>`;}
+function loadStatutIndep(){document.getElementById("statutOptions").innerHTML=`
+<button onclick="addStatut(300,'Célibataire')">Célibataire</button>
+<button onclick="addStatut(450,'Couple')">Couple</button>
+<button onclick="addStatut(700,'Couple 2 indépendants')">Couple 2 indépendants</button>
+<button onclick="addStatut(150,'Junior (-25 ans)')">Junior (-25 ans)</button>
+<button onclick="addStatut(250,'Couple junior (-25 ans)')">Couple junior (-25 ans)</button>`;}
+
+function addStatut(amount,label){total+=amount;summary.push("Statut : "+label);show('pageEnfants',50);}
+function addEnfants(){var nb=parseInt(document.getElementById("nbEnfants").value)||0;if(nb>0){total+=nb*50;summary.push("Enfants : "+nb);}else{summary.push("Enfants : Aucun");}show('pageProprio',65);}
+function setProprio(amount,label){total+=amount;summary.push(label);show('pageComptes',75);}
+function setComptes(amount,label){total+=amount;summary.push(label);show('pageSpec',85);}
+function addSpec(){var c=document.querySelectorAll("#pageSpec input:checked");if(c.length>0){var list=[];c.forEach(x=>{total+=50;list.push(x.value);});summary.push("Spécificités : "+list.join(", "));}else{summary.push("Spécificités : Aucune");}show('pageLoading',95);setTimeout(()=>{document.getElementById("total").innerText=total;document.getElementById("summary").innerHTML=summary.join("<br>");show('resultPage',100);},1500);}
+
+// BACK BUTTONS
+function backCA(){show('pageType',10);}
+function backStatut(){if(userType==='Indépendant'){show('pageCA',20);} else{show('pageType',10);}}
+function backEnfants(){show('pageStatut',35);}
+function backProprio(){show('pageEnfants',50);}
+function backComptes(){show('pageProprio',65);}
+function backSpec(){show('pageComptes',75);}
+
+// EMAIL
 function sendEmail(){
     var email = document.getElementById("clientEmail").value.trim();
     if(!email){ alert("Veuillez entrer un email valide."); return; }
 
     var message = summary.join("\n") + "\n\nMontant estimatif : CHF " + total + ".-";
 
-    fetch("https://alpina-mailer.vercel.app/", {  // <-- remplace par ton URL Vercel
+    fetch("https://alpina-mailer.vercel.app/", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -129,7 +232,7 @@ function sendEmail(){
     .then(data => {
         if(data.success){
             alert("Email envoyé !");
-            window.location.href = "https://calendar.google.com/..."; // redirection
+            window.location.href = "https://calendar.google.com/..."; 
         } else {
             alert("Erreur lors de l'envoi : " + data.error);
         }
