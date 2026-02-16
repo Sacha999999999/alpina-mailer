@@ -1,21 +1,144 @@
-fetch("/api/send", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: email,
-    subject: "Votre estimation fiscale Alpina-Conseil",
-    message: message
-  })
-})
-.then(res => res.json())
-.then(data => {
-    if(data.success){
-        alert("Email envoyé !");
-        window.location.href = "https://calendar.google.com/..."; // redirection
-    } else {
-        alert("Erreur lors de l'envoi : " + data.error);
-    }
-})
-.catch(err => {
-    alert("Erreur réseau, merci de réessayer.");
-});
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Alpina-Conseil Calculateur</title>
+<style>
+#alpina-calculateur{
+  font-family:'Segoe UI',sans-serif;
+  background:#f4f6f9;
+  padding:40px;
+  max-width:700px;
+  margin:auto;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+h2{text-align:center;color:#0d2b4d;}
+.page{display:none;text-align:center;}
+.active{display:block;}
+.page button:not(.back-btn){display:inline-block;margin:8px 10px;}
+button{background:#0d2b4d;color:white;border:none;padding:12px 20px;border-radius:6px;cursor:pointer;transition:.3s;}
+button:hover{background:#174a80;}
+.back-btn{background:#ccc;color:#333;padding:6px 12px;font-size:13px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;}
+.progress{height:8px;background:#ddd;border-radius:10px;margin-bottom:30px;overflow:hidden;}
+.progress-bar{height:8px;width:0%;background:#0d2b4d;transition:.4s;}
+.result{font-size:22px;font-weight:bold;color:#0d2b4d;margin-top:20px;}
+.summary{background:#fff;color:#0d2b4d;padding:15px;border-radius:8px;margin-top:20px;font-size:14px;line-height:1.6;text-align:left;}
+input[type="number"], input[type="email"], select{padding:8px;margin-top:10px;width:60%;border-radius:6px;border:1px solid #ccc;text-align:center;}
+.checkbox-group{margin-top:10px;text-align:left;display:inline-block;}
+.checkbox-group label{display:block;margin:5px 0;color:#0d2b4d;}
+.loading{text-align:center;font-weight:bold;color:#0d2b4d;}
+@media screen and (max-width: 600px) {
+  #alpina-calculateur {padding: 20px;border-radius: 10px;}
+  h2 {font-size: 20px;}
+  h3 {font-size: 18px;}
+  .page button:not(.back-btn) {display: block;width: 100%;margin: 8px 0;}
+  button {width: 100%;padding: 14px;font-size: 15px;}
+  .back-btn {width: 100%;}
+  input[type="number"], input[type="email"], select {width: 100%;}
+  .checkbox-group {width: 100%;}
+  .summary {font-size: 13px;}
+}
+</style>
+</head>
+<body>
+<div id="alpina-calculateur">
+
+<h2>Estimez le coût de votre déclaration fiscale avec Alpina-Conseil</h2>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+  <button onclick="start()">✨ Commencez ici</button>
+</div>
+
+<!-- TYPE -->
+<div class="page" id="pageType">
+  <h3>Vous êtes :</h3>
+  <button onclick="selectType('Particulier')">Particulier</button>
+  <button onclick="selectType('Indépendant')">Indépendant</button>
+  <button onclick="selectType('Société')">Société</button>
+  <button class="back-btn" onclick="show('page1',0)">⬅ Retour</button>
+</div>
+
+<!-- ENFANTS -->
+<div class="page" id="pageEnfants">
+  <h3>Nombre d'enfants (-18 ans)</h3>
+  <select id="nbEnfants">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6+</option>
+  </select>
+  <button onclick="addEnfants()">Suivant</button>
+  <button class="back-btn" onclick="backEnfants()">⬅ Retour</button>
+</div>
+
+<!-- RESULT -->
+<div class="page" id="resultPage">
+  <div class="result">
+    Montant estimatif : CHF <span id="total">0</span>.-
+  </div>
+  <div class="summary" id="summary"></div>
+  <div style="text-align:center;margin-top:20px;">
+    <button onclick="show('pageEmail',100)">Prendre rendez-vous</button>
+  </div>
+</div>
+
+<!-- EMAIL -->
+<div class="page" id="pageEmail">
+  <h3>Pour recevoir votre estimation par mail :</h3>
+  <input type="email" id="clientEmail" placeholder="Votre email" required>
+  <button onclick="sendEmail()">Recevoir mon estimation</button>
+  <button class="back-btn" onclick="show('resultPage',100)">⬅ Retour</button>
+</div>
+
+<script>
+var total=0, summary=[], userType="";
+
+function show(id,p){
+  document.querySelectorAll("#alpina-calculateur .page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("progressBar").style.width=p+"%";
+}
+
+function start(){total=0;summary=[];show('pageType',10);}
+function addEnfants(){var nb=parseInt(document.getElementById("nbEnfants").value)||0;if(nb>0){total+=nb*50;summary.push("Enfants : "+nb);}else{summary.push("Enfants : Aucun");}show('resultPage',100);}
+
+// EMAIL FETCH vers Vercel
+function sendEmail(){
+    var email = document.getElementById("clientEmail").value.trim();
+    if(!email){ alert("Veuillez entrer un email valide."); return; }
+
+    var message = summary.join("\n") + "\n\nMontant estimatif : CHF " + total + ".-";
+
+    fetch("https://alpina-mailer.vercel.app/", {  // <-- remplace par ton URL Vercel
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: email,
+            subject: "Votre estimation fiscale Alpina-Conseil",
+            message: message
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            alert("Email envoyé !");
+            window.location.href = "https://calendar.google.com/..."; // redirection
+        } else {
+            alert("Erreur lors de l'envoi : " + data.error);
+        }
+    })
+    .catch(err => {
+        alert("Erreur réseau, merci de réessayer.");
+    });
+}
+</script>
+</div>
+</body>
+</html>
